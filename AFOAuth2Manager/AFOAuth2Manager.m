@@ -222,14 +222,32 @@ static NSError * AFErrorFromRFC6749Section5_2Error(id object) {
     }
     parameters = [NSDictionary dictionaryWithDictionary:mutableParameters];
 
-    AFHTTPRequestOperation *requestOperation = [self POST:URLString parameters:parameters success:^(__unused AFHTTPRequestOperation *operation, id responseObject) {
-        if (!responseObject) {
+    AFHTTPRequestOperation *requestOperation = [self GET:URLString parameters:parameters success:^(__unused AFHTTPRequestOperation *operation, id response) {
+        if (!response) {
             if (failure) {
                 failure(nil);
             }
 
             return;
         }
+
+        if (!([response respondsToSelector:@selector(isSuccess)] && [response respondsToSelector:@selector(data)] && [response respondsToSelector:@selector(error)])) {
+            if (failure) {
+                failure(nil);
+            }
+
+            return;
+        }
+
+        if ([response isSuccess] == NO) {
+            if (failure) {
+                failure([response error]);
+            }
+
+            return;
+        }
+
+        id responseObject = [response data];
 
         if ([responseObject valueForKey:@"error"]) {
             if (failure) {
