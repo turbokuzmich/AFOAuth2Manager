@@ -24,6 +24,14 @@
 
 #import "AFOAuth2Manager.h"
 
+@protocol SparkApiResponseProtocol <NSObject>
+
+- (BOOL)isSuccess;
+- (NSError *)error;
+- (NSDictionary *)data;
+
+@end
+
 NSString * const AFOAuth2ErrorDomain = @"com.alamofire.networking.oauth2.error";
 
 NSString * const kAFOAuthCodeGrantType = @"authorization_code";
